@@ -1,35 +1,17 @@
 pipeline {
     agent any
-
     stages {
-        stage('Checkout') {
-            steps {
-                echo 'Checking out source code...'
-                checkout scm
-            }
-        }
-
         stage('Build') {
             steps {
-                echo 'Compiling Java code...'
-                sh 'javac HelloWorld.java'
+                sh 'mvn clean install'
             }
         }
-
-        stage('Run') {
+        stage('SonarQube Analysis') {
             steps {
-                echo 'Running Java program...'
-                sh 'java HelloWorld'
+                withSonarQubeEnv('sq1') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=my-helix-project -Dsonar.host.url=http://localhost:9000 -Dsonar.login=<TOKEN>'
+                }
             }
-        }
-    }
-
-    post {
-        success {
-            echo '✅ Build and execution successful!'
-        }
-        failure {
-            echo '❌ Build failed.'
         }
     }
 }
