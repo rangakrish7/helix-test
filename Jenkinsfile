@@ -7,8 +7,9 @@ pipeline {
     }
 
     environment {
-        SONAR_HOST_URL = 'http://localhost:9000'
+        SONAR_HOST_URL = 'http://<your-sonarqube-host>:9000'
         SONAR_PROJECT_KEY = 'my-helix-project'
+        DOCKER_IMAGE = 'your-dockerhub-username/my-helix-app'
     }
 
     stages {
@@ -24,10 +25,16 @@ pipeline {
             }
         }
 
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sq1') {
-                    withCredentials([string(credentialsId: 'squ_3c996640d35ff56559172bd8d84c0d185bdef718', variable: 'SONAR_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
                         sh """
                             mvn sonar:sonar \
                             -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
@@ -46,14 +53,42 @@ pipeline {
                 }
             }
         }
+
+        stage('Docker Build & Push') {
+            environment {
+                DOCKER_CREDS = credentials('dockerhub-credentials')
+            }
+            steps {
+                sh """
+                    docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .
+                    echo ${DOCKER_CREDS_PSW} | docker login -u ${DOCKER_CREDS_USR} --password-stdin
+                    docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                """
+            }
+        }
+
+        stage('Deploy to WSL') {
+            steps {
+                sshagent(['wsl-ssh-key']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no user@<wsl-ip> '
+                            docker pull ${DOCKER_IMAGE}:${BUILD_NUMBER} &&
+                            docker stop my-helix-app || true &&
+                            docker rm my-helix-app || true &&
+                            docker run -d --name my-helix-app -p 8080:8080 ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                        '
+                    """
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo '✅ Build and SonarQube analysis completed successfully!'
+            echo '✅ Build, SonarQube, Docker, and WSL Deploy completed successfully!'
         }
         failure {
-            echo '❌ Build failed or Quality Gate not passed.'
+            echo '❌ Pipeline failed. Check logs for details.'
         }
     }
 }
