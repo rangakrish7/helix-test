@@ -9,7 +9,7 @@ pipeline {
     environment {
         SONAR_HOST_URL = 'http://localhost:9000'
         SONAR_PROJECT_KEY = 'my-helix-project'
-        SONAR_TOKEN = credentials('squ_40174b6c381a824dc91b63235833e16c379fd5e6')
+        SONAR_TOKEN = credentials('squ_3c996640d35ff56559172bd8d84c0d185bdef718')
     }
 
     stages {
