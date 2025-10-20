@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'sonarsource/sonar-scanner-cli:latest'
+        }
+    }
 
     tools {
         maven 'Maven'
@@ -35,13 +39,13 @@ pipeline {
             steps {
                 withSonarQubeEnv('sq1') {
                     withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                        sh """
+                        sh '''
                            sonar-scanner \
-                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                            -Dsonar.host.url=${SONAR_HOST_URL} \
+                            -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+                            -Dsonar.host.url=$SONAR_HOST_URL \
                             -Dsonar.exclusions=**/node_modules/**,**/venv/**,**/tests/**,**/proc/** \
-                            -Dsonar.login=${SONAR_TOKEN}
-                        """
+                            -Dsonar.login=$SONAR_TOKEN
+                        '''
                     }
                 }
             }
@@ -60,25 +64,25 @@ pipeline {
                 DOCKER_CREDS = credentials('dockerhub-credentials')
             }
             steps {
-                sh """
+                sh '''
                     docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .
                     echo ${DOCKER_CREDS_PSW} | docker login -u ${DOCKER_CREDS_USR} --password-stdin
                     docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
-                """
+                '''
             }
         }
 
         stage('Deploy to WSL') {
             steps {
                 sshagent(['wsl-ssh-key']) {
-                    sh """
+                    sh '''
                         ssh -o StrictHostKeyChecking=no user@<wsl-ip> '
                             docker pull ${DOCKER_IMAGE}:${BUILD_NUMBER} &&
                             docker stop my-helix-app || true &&
                             docker rm my-helix-app || true &&
                             docker run -d --name my-helix-app -p 8080:8080 ${DOCKER_IMAGE}:${BUILD_NUMBER}
                         '
-                    """
+                    '''
                 }
             }
         }
