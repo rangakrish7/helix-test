@@ -2,44 +2,39 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven'    // Matches Global Tool Configuration
-        jdk 'JDK17'      // Matches Global Tool Configuration
+        maven 'Maven'
+        jdk 'JDK17'
     }
 
     environment {
         SONAR_HOST_URL = 'http://localhost:9000'
         SONAR_PROJECT_KEY = 'my-helix-project'
-        SONAR_TOKEN = credentials('sonar-token') // Jenkins credentials ID for SonarQube token
-    }
-
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '10'))
-        timestamps()
+        SONAR_TOKEN = credentials('squ_40174b6c381a824dc91b63235833e16c379fd5e6')
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-org/your-repo.git'
+                // For multibranch pipeline, use built-in SCM
+                checkout scm
             }
         }
 
         stage('Build') {
             steps {
-                sh 'mvn clean install -Dmaven.repo.local=.m2/repository'
+                sh 'mvn clean install'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sq1') {
-                    sh '''
+                    sh """
                         mvn sonar:sonar \
                         -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
                         -Dsonar.host.url=${SONAR_HOST_URL} \
-                        -Dsonar.login=${SONAR_TOKEN} \
-                        -Dmaven.repo.local=.m2/repository
-                    '''
+                        -Dsonar.login=${SONAR_TOKEN}
+                    """
                 }
             }
         }
