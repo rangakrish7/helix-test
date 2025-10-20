@@ -1,13 +1,9 @@
 pipeline {
     agent {
         docker {
-            image 'sonarsource/sonar-scanner-cli:latest'
+            image 'your-dockerhub-username/jenkins-agent:latest'  // Custom image with Maven, JDK17, SonarScanner
+            args '-v /var/run/docker.sock:/var/run/docker.sock'   // Mount Docker socket for build & push
         }
-    }
-
-    tools {
-        maven 'Maven'
-        jdk 'JDK17'
     }
 
     environment {
