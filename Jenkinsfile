@@ -1,11 +1,18 @@
 pipeline {
     agent {
         docker {
-            image 'your-dockerhub-username/jenkins-agent:latest'  // Custom image with Maven, JDK17, SonarScanner
-            args '-v /var/run/docker.sock:/var/run/docker.sock'   // Mount Docker socket for build & push
+            image 'rangakrish/jenkins-agent:latest'
+            args '-u root:root'
         }
     }
-
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+    }
+}
     environment {
         SONAR_HOST_URL = 'http://<your-sonarqube-host>:9000'
         SONAR_PROJECT_KEY = 'my-helix-project'
