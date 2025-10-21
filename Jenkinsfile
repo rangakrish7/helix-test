@@ -28,7 +28,7 @@ pipeline {
      stage('SonarQube Analysis') {
     steps {
         withSonarQubeEnv('SonarQube') {
-            withCredentials([string(credentialsId: 'sonarqube-token1', variable: 'SONAR_TOKEN')]) {
+            withCredentials([string(credentialsId: 'sonarqube-token2', variable: 'SONAR_TOKEN')]) {
                 sh '''
                     mvn sonar:sonar \
                     -Dsonar.projectKey=my-helix-project \
