@@ -7,7 +7,7 @@ pipeline {
     }
 
   environment {
-    SONAR_HOST_URL = 'http://localhost:9000/'
+    SONAR_HOST_URL = 'http://172.23.87.201:9100'
     SONAR_PROJECT_KEY = 'my-helix-project'
 
     }
@@ -28,7 +28,7 @@ pipeline {
      stage('SonarQube Analysis') {
     steps {
         withSonarQubeEnv('SonarQube') {
-            withCredentials([string(credentialsId: 'sonarqube-token2', variable: 'SONAR_TOKEN')]) {
+            withCredentials([string(credentialsId: 'sonarQube-token', variable: 'SONAR_TOKEN')]) {
                 sh '''
                     mvn sonar:sonar \
                     -Dsonar.projectKey=my-helix-project \
@@ -40,7 +40,7 @@ pipeline {
 }
         stage('Quality Gate') {
             steps {
-                timeout(time: 1, unit: 'MINUTES') {
+                timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }
