@@ -7,7 +7,7 @@ pipeline {
     }
 
   environment {
-    SONAR_HOST_URL = 'http://sonarqube:9000'
+    SONAR_HOST_URL = 'http://localhost:9000/tutorials?id=my-helix-project'
     SONAR_PROJECT_KEY = 'my-helix-project'
 
     }
