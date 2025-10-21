@@ -19,12 +19,7 @@
                 </configuration>
             </plugin>
 
-            <!-- ✅ SonarQube Maven Plugin -->
-            <plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>5.2.0.4988</version>
-            </plugin>
+        
         </plugins>
     </build>
 </project>
