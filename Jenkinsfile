@@ -32,8 +32,8 @@ pipeline {
                 sh '''
                     mvn sonar:sonar \
                     -Dsonar.projectKey=my-helix-project \
-                    -Dsonar.host.url=$SONAR_HOST_URL \
-                    -Dsonar.login=$SONAR_TOKEN
+                    -Dsonar.host.url=https://localhost:9000 \
+                    -Dsonar.login=squ_33c5d0c3722d3a605f7de97310f7e8d08e0475be
                 '''
             }
         }
