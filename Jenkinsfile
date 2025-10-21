@@ -6,9 +6,10 @@ pipeline {
         jdk 'JDK17'
     }
 
-    environment {
-        SONAR_HOST_URL = 'http://sonarqube-docker:9000'
-        SONAR_PROJECT_KEY = 'my-helix-project'
+  environment {
+    SONAR_HOST_URL = 'http://sonarqube:9000'
+    SONAR_PROJECT_KEY = 'my-helix-project'
+
     }
 
     stages {
@@ -26,8 +27,8 @@ pipeline {
 
      stage('SonarQube Analysis') {
     steps {
-        withSonarQubeEnv('SonarQube-Docker') {
-            withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+        withSonarQubeEnv('SonarQube') {
+            withCredentials([string(credentialsId: 'sonarqube-token1', variable: 'SONAR_TOKEN')]) {
                 sh '''
                     mvn sonar:sonar \
                     -Dsonar.projectKey=my-helix-project \
