@@ -24,21 +24,21 @@ pipeline {
             }
         }
 
-      stage('SonarQube Analysis') {
+     stage('SonarQube Analysis') {
     steps {
         withSonarQubeEnv('SonarQube-Docker') {
             withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
                 sh '''
+                    echo "Running SonarQube analysis..."
                     mvn sonar:sonar \
-                    -Dsonar.projectKey=my-helix-project \
-                    -Dsonar.host.url=$SONAR_HOST_URL \
-                    -Dsonar.login=$SONAR_TOKEN
+                        -Dsonar.projectKey=my-helix-project \
+                        -Dsonar.host.url=$SONAR_HOST_URL \
+                        -Dsonar.login=$SONAR_TOKEN
                 '''
             }
         }
     }
 }
-
         stage('Quality Gate') {
             steps {
                 timeout(time: 1, unit: 'MINUTES') {
