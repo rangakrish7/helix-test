@@ -24,7 +24,7 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                    <encoding>UTF-8</encoding>
+                   >
                 </configuration>
             </plugin>
 
@@ -32,13 +32,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-               version>3.3.0</version>
+                <version>3.3.0</version>
                 <configuration>
                     <archive>
                         <manifest>
                             <mainClass>com.example.helix.HelloWorld</mainClass>
                         </manifest>
-                   plugin>
+                    </archive>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
