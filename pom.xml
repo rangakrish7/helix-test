@@ -28,7 +28,7 @@
                 </configuration>
             </plugin>
 
-            <!-- JAR Plugin with Main-Class -->
+            with Main-Class -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -37,8 +37,7 @@
                     <archive>
                         <manifest>
                             <mainClass>com.example.helix.HelloWorld</mainClass>
-                        </manifest>
-                    </archive>
+                                           </archive>
                 </configuration>
             </plugin>
         </plugins>
