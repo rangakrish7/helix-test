@@ -9,9 +9,6 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Helix Hello World</name>
-    <description>A simple Java application for Docker and Helm deployment</description>
-
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -30,8 +27,7 @@
                 </configuration>
             </plugin>
 
-            <!-- JAR Plugin with Main Class -->
-            <plugin>
+                       <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.3.0</version>
