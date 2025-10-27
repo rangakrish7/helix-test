@@ -1,5 +1,7 @@
-public class HelloWorld {
+package com.example.helix;
+
+public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello, World from Java 17!");
+        System.out.println("Hello, World!");
     }
 }
