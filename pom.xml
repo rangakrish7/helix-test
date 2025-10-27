@@ -16,8 +16,7 @@
 
     <build>
         <plugins>
-            <!-- Compiler Plugin -->
-            <plugin>
+           plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
@@ -25,16 +24,21 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
-                           <!-- JAR Plugin with Main-Class -->
+                </configuration>
+            </plugin>
+
+            <!-- JAR Plugin with Main-Class -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+               >org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
                     <archive>
                         <manifest>
                             <mainClass>com.example.helix.HelloWorld</mainClass>
-                        </configuration>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
         </plugins>
     </build>
