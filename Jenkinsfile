@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        SONAR_HOST_URL = 'http://172.23.87.201:9100'
+        SONAR_HOST_URL = 'http://172.23.87.201:9000'
         SONAR_PROJECT_KEY = 'my-helix-project'
     }
 
