@@ -28,38 +28,37 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     withCredentials([string(credentialsId: 'sonarQube-token', variable: 'SONAR_TOKEN')]) {
-                      sh """
-                      mvn sonar:sonar \
-                    -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                    -Dsonar.exclusions=**/node_modules/**,**/venv/**,**/tests/**,**/proc/** \
-                    -Dsonar.host.url=${SONAR_HOST_URL} \
-                    -Dsonar.login=${SONAR_TOKEN} \
-                   -Dsonar.coverage.jacoco.xmlReportPaths=/var/jenkins_home/workspace/multibranch-deploy_feature_HEL-7/target/site/jacoco/jacoco.xml
-                    """
+                        sh """
+                            mvn sonar:sonar \
+                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                            -Dsonar.exclusions=**/node_modules/**,**/venv/**,**/tests/**,**/proc/** \
+                            -Dsonar.host.url=${SONAR_HOST_URL} \
+                            -Dsonar.login=${SONAR_TOKEN} \
+                            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                        """
                     }
                 }
             }
         }
-         stage('Deploy with Helm') {
-    steps {
-        script {
-            sh '''
-            echo "📦 Deploying Jenkins with Helm..."
 
-            # Navigate to the Jenkins chart directory
-            cd ${WORKSPACE}/helix-test/hello-world-chart/helm-charts-main/charts/jenkins
+        stage('Deploy with Helm') {
+            steps {
+                script {
+                    sh '''
+                        echo "📦 Deploying Jenkins with Helm..."
 
-            # Deploy or upgrade the Jenkins release
-            helm upgrade --install jenkins . \
-              --namespace default \
-              --values values.yaml
+                        cd ${WORKSPACE}/helix-test/hello-world-chart/helm-charts-main/charts/jenkins
 
-            echo "✅ Jenkins deployment completed."
-            '''
+                        helm upgrade --install jenkins . \
+                          --namespace default \
+                          --values values.yaml
+
+                        echo "✅ Jenkins deployment completed."
+                    '''
+                }
+            }
         }
     }
-}
-
 
     post {
         success {
