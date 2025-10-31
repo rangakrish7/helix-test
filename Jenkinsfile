@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven'       // Ensure 'Maven' is configured in Jenkins Global Tools
-        jdk 'JDK17'         // Ensure 'JDK17' is configured in Jenkins Global Tools
+        maven 'Maven 3.9.6'
+        jdk 'jdk-21'
+        helm 'Helm 3.14.0'
     }
 
     environment {
-        SONAR_HOST_URL = 'http://172.23.87.201:9000'
-        SONAR_PROJECT_KEY = 'my-helix-project'
+        SONARQUBE_ENV = 'SonarQube'
     }
 
     stages {
@@ -18,58 +18,43 @@ pipeline {
             }
         }
 
-        stage('Inspect Workspace') {
+        stage('SonarQube Analysis') {
             steps {
-                sh 'ls -R $WORKSPACE'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'mvn clean install'
-            }
-        }
-
-        stage('SonarQube Analysis & Quality Gate') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    withCredentials([string(credentialsId: 'sonarQube-token', variable: 'SONAR_TOKEN')]) {
-                        sh '''
-                            mvn sonar:sonar \
-                              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                              -Dsonar.exclusions=**/node_modules/**,**/venv/**,**/tests/**,**/proc/** \
-                              -Dsonar.host.url=${SONAR_HOST_URL} \
-                              -Dsonar.login=${SONAR_TOKEN} \
-                              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-                        '''
+                withSonarQubeEnv("${SONARQUBE_ENV}") {
+                    withCredentials([usernamePassword(credentialsId: 'sonar-creds', usernameVariable: 'SONAR_USER', passwordVariable: 'SONAR_PASS')]) {
+                        sh 'mvn clean verify sonar:sonar -Dsonar.login=$SONAR_USER -Dsonar.password=$SONAR_PASS'
                     }
                 }
             }
         }
 
-stage('Deploy with Helm') {
-    steps {
-        script {
-            sh '''
-                echo "📦 Deploying Jenkins with Helm..."
+        stage('Deploy with Helm') {
+            steps {
+                script {
+                    echo "📦 Deploying Jenkins with Helm..."
 
-                cd ${WORKSPACE}/helix-test/hello-world-chart/helm-charts-main/charts/jenkins
+                    // Debug: Show current directory structure
+                    sh 'echo "Current workspace:" && pwd && ls -R'
 
-                helm upgrade --install jenkins . \
-                  --namespace default \
-                  --values values.yaml
+                    def chartPath = 'helix-test/hello-world-chart/helm-charts-main/charts/jenkins'
+                    def fullPath = "${env.WORKSPACE}/${chartPath}"
 
-                echo "✅ Jenkins deployment completed."
-            '''
+                    // Check if directory exists before cd
+                    sh """
+                        if [ -d "${fullPath}" ]; then
+                          cd "${fullPath}"
+                          helm upgrade --install jenkins . --namespace default
+                        else
+                          echo "❌ Directory not found: ${fullPath}"
+                          exit 1
+                        fi
+                    """
+                }
+            }
         }
-    }
-}
     }
 
     post {
-        success {
-            echo '✅ Build, SonarQube analysis, and deployment completed successfully!'
-        }
         failure {
             echo '❌ Build failed or Quality Gate not passed.'
         }
