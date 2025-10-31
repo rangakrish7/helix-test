@@ -47,10 +47,8 @@ pipeline {
                     sh '''
                         echo "📦 Deploying Jenkins with Helm..."
 
-                        cd ${WORKSPACE}/helix-test/hello-world-chart/helm-charts-main/charts/jenkins
-
-                        helm upgrade --install jenkins . \
-                          --namespace default \
+                        helm upgrade --install myapp ./hello-world-chart \
+                          --namespace production \
                           --values values.yaml
 
                         echo "✅ Jenkins deployment completed."
