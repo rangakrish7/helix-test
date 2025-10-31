@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven'       // Ensure Maven tool is configured in Jenkins
-        jdk 'JDK17'         // Ensure JDK17 is configured in Jenkins
+        maven 'Maven'       // Ensure 'Maven' is configured in Jenkins Global Tools
+        jdk 'JDK17'         // Ensure 'JDK17' is configured in Jenkins Global Tools
     }
 
     environment {
@@ -28,14 +28,14 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     withCredentials([string(credentialsId: 'sonarQube-token', variable: 'SONAR_TOKEN')]) {
-                        sh """
+                        sh '''
                             mvn sonar:sonar \
-                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                            -Dsonar.exclusions=**/node_modules/**,**/venv/**,**/tests/**,**/proc/** \
-                            -Dsonar.host.url=${SONAR_HOST_URL} \
-                            -Dsonar.login=${SONAR_TOKEN} \
-                            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-                        """
+                              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                              -Dsonar.exclusions=**/node_modules/**,**/venv/**,**/tests/**,**/proc/** \
+                              -Dsonar.host.url=${SONAR_HOST_URL} \
+                              -Dsonar.login=${SONAR_TOKEN} \
+                              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                        '''
                     }
                 }
             }
@@ -62,7 +62,7 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build and SonarQube analysis completed successfully!'
+            echo '✅ Build, SonarQube analysis, and deployment completed successfully!'
         }
         failure {
             echo '❌ Build failed or Quality Gate not passed.'
