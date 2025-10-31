@@ -28,13 +28,13 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     withCredentials([string(credentialsId: 'sonarQube-token', variable: 'SONAR_TOKEN')]) {
-                        sh """
-                        mvn sonar:sonar \
-                       -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                       -Dsonar.exclusions=**/node_modules/**,**/venv/**,**/tests/**,**/proc/** \
-                       -Dsonar.host.url=${SONAR_HOST_URL} \
-                      -Dsonar.login=${SONAR_TOKEN} \
-                      -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                      sh """
+                      mvn sonar:sonar \
+                    -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                    -Dsonar.exclusions=**/node_modules/**,**/venv/**,**/tests/**,**/proc/** \
+                    -Dsonar.host.url=${SONAR_HOST_URL} \
+                    -Dsonar.login=${SONAR_TOKEN} \
+                   -Dsonar.coverage.jacoco.xmlReportPaths=/var/jenkins_home/workspace/multibranch-deploy_feature_HEL-7/target/site/jacoco/jacoco.xml
                     """
                     }
                 }
