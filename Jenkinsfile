@@ -40,22 +40,7 @@ pipeline {
                 }
             }
         }
-
-        stage('Deploy with Helm') {
-            steps {
-                script {
-                    sh '''
-                        echo "📦 Deploying Jenkins with Helm..."
-
-                        sudo helm upgrade --install myapp ./hello-world-chart \
-                          --namespace production \
-                          --values values.yaml
-
-                        echo "✅ Jenkins deployment completed."
-                    '''
-                }
-            }
-        }
+          
     }
 
     post {
