@@ -47,7 +47,7 @@ pipeline {
                     sh '''
                         echo "📦 Deploying Jenkins with Helm..."
 
-                        helm upgrade --install myapp ./hello-world-chart \
+                        sudo helm upgrade --install myapp ./hello-world-chart \
                           --namespace production \
                           --values values.yaml
 
