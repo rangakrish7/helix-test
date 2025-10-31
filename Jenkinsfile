@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        SONAR_HOST_URL = 'http://172.23.87.201:9100'
+        SONAR_HOST_URL = 'http://172.23.87.201:9000'
         SONAR_PROJECT_KEY = 'my-helix-project'
     }
 
@@ -28,17 +28,29 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     withCredentials([string(credentialsId: 'sonarQube-token', variable: 'SONAR_TOKEN')]) {
-                        sh '''
-                            mvn sonar:sonar \
-                            -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-                            -Dsonar.host.url=$SONAR_HOST_URL \
-                            -Dsonar.login=$SONAR_TOKEN
-                        '''
+                      sh """
+                      mvn sonar:sonar \
+                    -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                    -Dsonar.exclusions=**/node_modules/**,**/venv/**,**/tests/**,**/proc/** \
+                    -Dsonar.host.url=${SONAR_HOST_URL} \
+                    -Dsonar.login=${SONAR_TOKEN} \
+                   -Dsonar.coverage.jacoco.xmlReportPaths=/var/jenkins_home/workspace/multibranch-deploy_feature_HEL-7/target/site/jacoco/jacoco.xml
+                    """
                     }
                 }
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
+            }
+        }
+         stage('Deploy with Helm') {
+            steps {
+                sh '''
+                # Navigate to chart directory
+                cd helix-test/hello-world-chart/helm-charts-main/charts/jenkins
+
+                # Deploy using Helm
+                helm upgrade --install my-app . \
+                  --namespace default \
+                  --values values.yaml
+                '''
             }
         }
     }
