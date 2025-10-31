@@ -41,19 +41,25 @@ pipeline {
             }
         }
          stage('Deploy with Helm') {
-            steps {
-                sh '''
-                # Navigate to chart directory
-                cd helix-test/hello-world-chart/helm-charts-main/charts/jenkins
+    steps {
+        script {
+            sh '''
+            echo "📦 Deploying Jenkins with Helm..."
 
-                # Deploy using Helm
-                helm upgrade --install my-app . \
-                  --namespace default \
-                  --values values.yaml
-                '''
-            }
+            # Navigate to the Jenkins chart directory
+            cd ${WORKSPACE}/helix-test/hello-world-chart/helm-charts-main/charts/jenkins
+
+            # Deploy or upgrade the Jenkins release
+            helm upgrade --install jenkins . \
+              --namespace default \
+              --values values.yaml
+
+            echo "✅ Jenkins deployment completed."
+            '''
         }
     }
+}
+
 
     post {
         success {
