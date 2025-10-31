@@ -30,9 +30,11 @@ pipeline {
                     withCredentials([string(credentialsId: 'sonarQube-token', variable: 'SONAR_TOKEN')]) {
                         sh '''
                             mvn sonar:sonar \
-                            -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+                            
+                            -Dsonar.projectKey=$SONAR_PROJECT_KEY \ 
+                            -Dsonar.exclusions=**/node_modules/**,**/venv/**,**/tests/**,**/proc/** \
                             -Dsonar.host.url=$SONAR_HOST_URL \
-                            -Dsonar.login=$SONAR_TOKEN
+                            -Dsonar.login=$SONAR_TOKEN 
                         '''
                     }
                 }
