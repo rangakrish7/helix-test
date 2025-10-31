@@ -47,23 +47,23 @@ pipeline {
             }
         }
 
-        stage('Deploy with Helm') {
-            steps {
-                script {
-                    sh '''
-                        echo "📦 Deploying Jenkins with Helm..."
+stage('Deploy with Helm') {
+    steps {
+        script {
+            sh '''
+                echo "📦 Deploying Jenkins with Helm..."
 
-                        cd ${WORKSPACE}/helix-test/hello-world-chart/helm-charts-main/charts/jenkins
+                cd ${WORKSPACE}/helix-test/hello-world-chart/helm-charts-main/charts/jenkins
 
-                        helm upgrade --install jenkins . \
-                          --namespace default \
-                          --values values.yaml
+                helm upgrade --install jenkins . \
+                  --namespace default \
+                  --values values.yaml
 
-                        echo "✅ Jenkins deployment completed."
-                    '''
-                }
-            }
+                echo "✅ Jenkins deployment completed."
+            '''
         }
+    }
+}
     }
 
     post {
